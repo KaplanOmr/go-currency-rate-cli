@@ -2,18 +2,25 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 )
 
 func main() {
 	currenciesData := getCurrencies()
 
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+
+	tbl := table.New("Currency", "Buy", "Shell", "Changes").WithHeaderFormatter(headerFmt)
+
 	for currency, info := range currenciesData {
-		line := fmt.Sprintf("Currency: %10s Shell: %10s₺ Buy: %10s₺", currency, info.Sell, info.Buy)
-		fmt.Println(line)
+		tbl.AddRow(currency, info.Buy, info.Sell, info.Changes)
 	}
+
+	tbl.Print()
 }
 
 func getCurrencies() CurrenciesRateData {
