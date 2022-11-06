@@ -1,5 +1,7 @@
 package main
 
+const API = "genelpara.com"
+
 type CurrencyData struct {
 	Sell    string `json:"satis"`
 	Buy     string `json:"alis"`

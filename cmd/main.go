@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -18,23 +20,32 @@ func main() {
 	currenciesData := getCurrencies()
 
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
 
-	tbl := table.New("Currency", "Buy", "Shell", "Changes").WithHeaderFormatter(headerFmt)
+	tbl := table.New("Currency", "Buy", "Shell", "Changes")
+	tbl.WithHeaderFormatter(headerFmt)
+	tbl.WithFirstColumnFormatter(columnFmt)
 
 	for currency, info := range currenciesData {
-		if *currencyFlag == "all" {
+		if *currencyFlag == "all" || *currencyFlag == "" {
 			tbl.AddRow(currency, info.Buy, info.Sell, info.Changes)
 		} else if *currencyFlag == strings.ToLower(currency) {
 			tbl.AddRow(currency, info.Buy, info.Sell, info.Changes)
 			break
+		} else {
+			fmt.Println("INCORRECT_CURRENCY")
+			return
 		}
 	}
 
 	tbl.Print()
+
+	fmt.Printf("\nDate: %s", time.Now().Format("2006.01.02 15:04:05"))
+	fmt.Println("\nResource: https://" + API)
 }
 
 func getCurrencies() CurrenciesRateData {
-	resp, err := http.Get("")
+	resp, err := http.Get("https://api." + API + "/embed/doviz.json")
 	if err != nil {
 		panic("CURRENCIES_DATA_FETCH_ERROR")
 	}
