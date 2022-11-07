@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,9 +29,9 @@ func main() {
 
 	for currency, info := range currenciesData {
 		if *currencyFlag == "all" || *currencyFlag == "" {
-			tbl.AddRow(currency, info.Buy, info.Sell, info.Changes)
+			tbl.AddRow(currency, info.Buy, info.Sell, getChangesWithColor(info.Changes))
 		} else if *currencyFlag == strings.ToLower(currency) {
-			tbl.AddRow(currency, info.Buy, info.Sell, info.Changes)
+			tbl.AddRow(currency, info.Buy, info.Sell, getChangesWithColor(info.Changes))
 			break
 		} else {
 			fmt.Println("INCORRECT_CURRENCY")
@@ -62,4 +63,20 @@ func getCurrencies() CurrenciesRateData {
 	}
 
 	return currenciesRateData
+}
+
+func getChangesWithColor(rate string) string {
+	parsedRate, err := strconv.ParseFloat(rate, 3)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if parsedRate < 0 {
+		return fmt.Sprintf("\u001b[41;1m %s \u001b[0m", rate)
+	} else if parsedRate > 0 {
+		return fmt.Sprintf("\u001b[42;1m %s \u001b[0m", rate)
+	}
+
+	return rate
 }
