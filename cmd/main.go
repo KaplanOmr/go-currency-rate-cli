@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/KaplanOmr/colorizer"
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
 )
@@ -72,10 +73,12 @@ func getChangesWithColor(rate string) string {
 		panic(err)
 	}
 
+	var c colorizer.Colorizer
+
 	if parsedRate < 0 {
-		return fmt.Sprintf("\u001b[41;1m %s \u001b[0m", rate)
+		return c.New(rate, colorizer.RED)
 	} else if parsedRate > 0 {
-		return fmt.Sprintf("\u001b[42;1m %s \u001b[0m", rate)
+		return c.New(rate, colorizer.GREEN)
 	}
 
 	return rate
